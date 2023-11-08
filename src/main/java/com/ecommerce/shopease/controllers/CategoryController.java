@@ -1,11 +1,9 @@
 package com.ecommerce.shopease.controllers;
 
 import com.ecommerce.shopease.models.Category;
-import com.ecommerce.shopease.repos.CategoryRepository;
 import com.ecommerce.shopease.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,7 +18,23 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @GetMapping
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
+    }
+
+    @PostMapping
+    public Category createCategory(@RequestBody Category category) {
+        return categoryService.saveCategory(category);
+    }
+
+    @PutMapping
+    public Category updateCategory(@RequestBody Category category) {
+        return categoryService.updateCategory(category);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public String deleteCategory(@PathVariable Long id) {
+        return categoryService.deleteCategory(id);
     }
 }

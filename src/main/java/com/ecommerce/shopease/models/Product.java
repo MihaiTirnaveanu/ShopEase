@@ -1,6 +1,7 @@
 package com.ecommerce.shopease.models;
 
 
+import com.ecommerce.shopease.services.CategoryService;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,4 +27,8 @@ public class Product {
 
     @Column(name = "description")
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

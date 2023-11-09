@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -23,11 +24,12 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(ProductDto::new).collect(Collectors.toList());
     }
 
-    public Product saveProduct(ProductDto productDto) {
+    public ProductDto saveProduct(ProductDto productDto) {
         Category category = categoryRepository.findById(productDto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Error while retrieving productDto category."));
 
@@ -40,10 +42,10 @@ public class ProductService {
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
 
-        return productRepository.save(product);
+        return new ProductDto(productRepository.save(product));
     }
 
-    public Product updateProduct(ProductDto productDto) {
+    public ProductDto updateProduct(ProductDto productDto) {
         Product product = productRepository.findById(productDto.getId())
                 .orElseThrow(() -> new RuntimeException("Error while retrieving product id"));
 
@@ -57,7 +59,7 @@ public class ProductService {
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
 
-        return productRepository.save(product);
+        return new ProductDto(productRepository.save(product));
     }
 
     public String deleteProduct(Long id) {
@@ -65,7 +67,9 @@ public class ProductService {
         return "Product " + id + " has been deleted.";
     }
 
-    public List<Product> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+    public List<ProductDto> getProductsByCategory(Long categoryId) {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+        return products.stream()
+                .map(ProductDto::new).collect(Collectors.toList());
     }
 }

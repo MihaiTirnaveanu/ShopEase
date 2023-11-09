@@ -20,17 +20,17 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody ProductDto productDto) {
+    public ProductDto createProduct(@RequestBody ProductDto productDto) {
         return productService.saveProduct(productDto);
     }
 
     @PutMapping
-    public Product updateProduct(@RequestBody ProductDto productDto) {
+    public ProductDto updateProduct(@RequestBody ProductDto productDto) {
         return productService.updateProduct(productDto);
     }
 
@@ -40,7 +40,7 @@ public class ProductController {
     }
 
     @GetMapping(path = "/category/{categoryId}")
-    public List<Product> getProductsByCategoryId(@PathVariable Long categoryId) {
+    public List<ProductDto> getProductsByCategoryId(@PathVariable Long categoryId) {
         return productService.getProductsByCategory(categoryId);
     }
 }

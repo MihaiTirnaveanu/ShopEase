@@ -62,12 +62,10 @@ public class ProductService {
 
     public String deleteProduct(Long id) {
         productRepository.deleteById(id);
-        return "Product" + id + "has been deleted.";
+        return "Product " + id + " has been deleted.";
     }
 
     public List<Product> getProductsByCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Error while retrieving productDto category."));
-        return productRepository.findByCategory(category);
+        return productRepository.findByCategoryId(categoryId);
     }
 }

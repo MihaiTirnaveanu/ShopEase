@@ -39,7 +39,7 @@ public class ProductController {
         return productService.deleteProduct(id);
     }
 
-    @GetMapping(path = "/{categoryId}")
+    @GetMapping(path = "/category/{categoryId}")
     public List<Product> getProductsByCategoryId(@PathVariable Long categoryId) {
         return productService.getProductsByCategory(categoryId);
     }

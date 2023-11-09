@@ -5,9 +5,12 @@ import com.ecommerce.shopease.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200/")
 @RequestMapping("/api/categories")
 public class CategoryController {
 
@@ -34,7 +37,7 @@ public class CategoryController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public String deleteCategory(@PathVariable Long id) {
-        return categoryService.deleteCategory(id);
+    public Map<String, String> deleteCategory(@PathVariable Long id) {
+        return Collections.singletonMap("response", categoryService.deleteCategory(id));
     }
 }

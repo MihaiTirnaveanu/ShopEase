@@ -4,11 +4,16 @@ import com.ecommerce.shopease.dtos.ProductDto;
 import com.ecommerce.shopease.models.Product;
 import com.ecommerce.shopease.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200/")
 @RequestMapping("/api/products")
 public class ProductController {
 
@@ -34,9 +39,9 @@ public class ProductController {
         return productService.updateProduct(productDto);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public String deleteProduct(@PathVariable Long id){
-        return productService.deleteProduct(id);
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, String> deleteProduct(@PathVariable Long id){
+        return Collections.singletonMap("response", productService.deleteProduct(id));
     }
 
     @GetMapping(path = "/category/{categoryId}")

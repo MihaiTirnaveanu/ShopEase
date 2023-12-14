@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:4200/")
 @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
 public class ProductController {
 

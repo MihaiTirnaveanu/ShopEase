@@ -7,6 +7,7 @@ import com.ecommerce.shopease.security.token.TokenType;
 import com.ecommerce.shopease.security.user.Role;
 import com.ecommerce.shopease.security.user.User;
 import com.ecommerce.shopease.security.user.UserRepository;
+import com.ecommerce.shopease.security.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,8 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     private final TokenRepository tokenRepository;
+
+    private final UserService userService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()

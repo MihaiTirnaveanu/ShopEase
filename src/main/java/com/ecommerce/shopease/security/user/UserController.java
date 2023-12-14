@@ -1,11 +1,9 @@
 package com.ecommerce.shopease.security.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -17,7 +15,8 @@ public class UserController {
 
     @GetMapping("/role")
     @PreAuthorize("hasAuthority('admin:read') OR hasAuthority('user:read')")
-    public String getUserRole() { String userRole = userService.getCurrentUserRole();
-        return userRole;
+    public ResponseEntity<String> getUserRole() {
+        String userRole = userService.getCurrentUserRole();
+        return ResponseEntity.ok().body(userRole);
     }
 }

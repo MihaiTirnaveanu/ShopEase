@@ -18,14 +18,11 @@ public class UserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
-        List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
-        int lastIndex = authorities.size() - 1;
 
-        return authorities.stream()
-                .filter(authority -> authority instanceof SimpleGrantedAuthority)
+        return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .skip(lastIndex)
                 .findFirst()
                 .orElse(null);
     }
+
 }

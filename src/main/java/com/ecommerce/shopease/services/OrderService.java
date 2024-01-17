@@ -6,6 +6,8 @@ import com.ecommerce.shopease.models.ShoppingCart;
 import com.ecommerce.shopease.repos.OrderRepository;
 import com.ecommerce.shopease.repos.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,37 +19,50 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ShoppingCartRepository shoppingCartRepository;
     private final CartItemService cartItemService;
+
+    private final ShoppingCartService shoppingCartService;
 
     @Autowired
     public OrderService(OrderRepository orderRepository,
                         ShoppingCartRepository shoppingCartRepository,
-                        CartItemService cartItemService) {
+                        CartItemService cartItemService, ShoppingCartService shoppingCartService) {
         this.orderRepository = orderRepository;
-        this.shoppingCartRepository = shoppingCartRepository;
         this.cartItemService = cartItemService;
+        this.shoppingCartService = shoppingCartService;
     }
 
     @Transactional
-    public OrderDto createOrder(Long shoppingCartId, String code) {
-        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findById(shoppingCartId);
+    public OrderDto createOrder() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        ShoppingCart shoppingCart = shoppingCartService.getOrCreateShoppingCart(username);
+        String productCode = generateRandomString(5);
 
-        if (optionalShoppingCart.isPresent()) {
-            ShoppingCart shoppingCart = optionalShoppingCart.get();
-            Order order = new Order();
-            order.setCode(code);
-            order.setTotalCost(shoppingCart.getTotalCost());
-            order.setSentDate(new Date());
-            order.setShoppingCart(shoppingCart);
+        Order order = new Order();
+        order.setCode(this.generateRandomString(5));
+        order.setTotalCost(shoppingCart.getTotalCost());
+        order.setSentDate(new Date());
+        order.setShoppingCart(shoppingCart);
+        order.setCode(productCode);
 
-            orderRepository.save(order);
-            cartItemService.deleteAllCartItems();
+        orderRepository.save(order);
+        cartItemService.deleteAllCartItems();
 
-            return new OrderDto(order);
-        } else {
-            throw new RuntimeException("Shopping Cart not found with ID: " + shoppingCartId);
+        return new OrderDto(order);
+    }
+
+    // Helper method to generate a random string of given length
+    private String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder randomString = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = (int) (Math.random() * characters.length());
+            randomString.append(characters.charAt(index));
         }
+
+        return randomString.toString();
     }
 
     public List<OrderDto> getAllOrders() {

@@ -1,5 +1,6 @@
 package com.ecommerce.shopease.controllers;
 
+import com.ecommerce.shopease.dtos.OrderDto;
 import com.ecommerce.shopease.models.CreateOrderRequest;
 import com.ecommerce.shopease.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,8 @@ public class OrderController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('user:create')")
-    public Map<String, String> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
-        Long shoppingCartId = createOrderRequest.getShoppingCartId();
-        String code = createOrderRequest.getCode();
-        orderService.createOrder(shoppingCartId, code);
-        return Collections.singletonMap("response", "Order created successfully.");
+    public OrderDto createOrder() {
+        return orderService.createOrder();
     }
 
     @GetMapping

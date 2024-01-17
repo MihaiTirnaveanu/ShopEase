@@ -41,6 +41,7 @@ public class ProductService {
         product.setProvider(productDto.getProvider());
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
+        product.setCost(productDto.getCost());
 
         return new ProductDto(productRepository.save(product));
     }
@@ -58,6 +59,7 @@ public class ProductService {
         product.setProvider(productDto.getProvider());
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
+        product.setCost(productDto.getCost());
 
         return new ProductDto(productRepository.save(product));
     }

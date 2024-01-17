@@ -1,5 +1,6 @@
 package com.ecommerce.shopease.security.user;
 
+import com.ecommerce.shopease.models.ShoppingCart;
 import com.ecommerce.shopease.security.token.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ShoppingCart shoppingCart;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
@@ -59,5 +63,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return username + " " + shoppingCart.getId() + " " + shoppingCart.getTotalCost();
     }
 }

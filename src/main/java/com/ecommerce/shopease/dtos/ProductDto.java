@@ -14,6 +14,8 @@ public class ProductDto {
 
     private int stock;
 
+    private int cost;
+
     private String provider;
 
     private String description;
@@ -28,6 +30,7 @@ public class ProductDto {
         provider = product.getProvider();
         description = product.getDescription();
         categoryId = product.getCategory().getId();
+        cost = product.getCost();
     }
 
     public ProductDto() {

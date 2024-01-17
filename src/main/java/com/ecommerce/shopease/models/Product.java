@@ -1,9 +1,12 @@
 package com.ecommerce.shopease.models;
 
 
+import com.ecommerce.shopease.services.CartItemService;
 import com.ecommerce.shopease.services.CategoryService;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Set;
 
 @Entity
 @Data
@@ -22,6 +25,9 @@ public class Product {
     @Column(name = "stock")
     private int stock;
 
+    @Column(name = "cost")
+    private int cost;
+
     @Column(name = "provider")
     private String provider;
 
@@ -31,4 +37,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToMany(mappedBy = "product")
+    private Set<CartItem> cartItems;
 }

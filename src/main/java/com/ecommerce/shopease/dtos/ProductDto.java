@@ -22,6 +22,8 @@ public class ProductDto {
 
     private Long categoryId;
 
+    private String image;
+
     public ProductDto(Product product) {
         id = product.getId();
         name = product.getName();
@@ -31,6 +33,7 @@ public class ProductDto {
         description = product.getDescription();
         categoryId = product.getCategory().getId();
         cost = product.getCost();
+        image = product.getImage();
     }
 
     public ProductDto() {

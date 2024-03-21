@@ -42,6 +42,7 @@ public class ProductService {
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
         product.setCost(productDto.getCost());
+        product.setImage(productDto.getImage());
 
         return new ProductDto(productRepository.save(product));
     }
@@ -60,6 +61,7 @@ public class ProductService {
         product.setDescription(productDto.getDescription());
         product.setCategory(category);
         product.setCost(productDto.getCost());
+        product.setImage(productDto.getImage());
 
         return new ProductDto(productRepository.save(product));
     }

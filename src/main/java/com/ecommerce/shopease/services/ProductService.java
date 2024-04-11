@@ -79,11 +79,34 @@ public class ProductService {
     }
 
     public List<ProductDto> searchProductByName(String query) {
-        List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
-        return products.stream()
+        //List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
+        //return products.stream();
+
+        // Split the query string into individual words
+        String[] keywords = query.split("\\s+");
+
+        // Initialize a list to hold products that match all keywords
+        List<Product> matchedProducts = new ArrayList<>();
+
+        // Loop through each keyword and find products containing all keywords
+        for (String keyword : keywords) {
+            List<Product> productsContainingKeyword = productRepository.findByNameContainingIgnoreCase(keyword);
+
+            if (matchedProducts.isEmpty()) {
+                // If matchedProducts is empty, add all products containing the current keyword
+                matchedProducts.addAll(productsContainingKeyword);
+            } else {
+                // If matchedProducts is not empty, retain only those products containing the current keyword
+                matchedProducts.retainAll(productsContainingKeyword);
+            }
+        }
+
+        // Map and collect the matched products into ProductDto objects
+        return matchedProducts.stream()
                 .map(ProductDto::new)
                 .collect(Collectors.toList());
     }
+
 
     public List<String> getPredictiveSearchSuggestions(String query) {
         List<String> suggestions = new ArrayList<>();

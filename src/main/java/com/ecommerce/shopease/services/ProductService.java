@@ -8,6 +8,7 @@ import com.ecommerce.shopease.repos.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,5 +76,21 @@ public class ProductService {
         List<Product> products = productRepository.findByCategoryId(categoryId);
         return products.stream()
                 .map(ProductDto::new).collect(Collectors.toList());
+    }
+
+    public List<ProductDto> searchProductByName(String query) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
+        return products.stream()
+                .map(ProductDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getPredictiveSearchSuggestions(String query) {
+        List<String> suggestions = new ArrayList<>();
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
+        for (Product product : products) {
+            suggestions.add(product.getName());
+        }
+        return suggestions;
     }
 }

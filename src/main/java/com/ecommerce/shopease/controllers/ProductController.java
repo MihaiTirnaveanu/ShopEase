@@ -33,6 +33,18 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping(path = "/search")
+    @PreAuthorize("hasAuthority('admin:read') OR hasAuthority('user:read')")
+    public List<ProductDto> searchProductsByName(@RequestParam String query) {
+        return productService.searchProductByName(query);
+    }
+
+    @GetMapping(path = "/search/predictive")
+    @PreAuthorize("hasAuthority('admin:read') OR hasAuthority('user:read')")
+    public List<String> getPredictiveSearchSuggestions(@RequestParam String query) {
+        return productService.getPredictiveSearchSuggestions(query);
+    }
+
     @GetMapping(path = "/category/{categoryId}")
     @PreAuthorize("hasAuthority('admin:read') OR hasAuthority('user:read')")
     public List<ProductDto> getProductsByCategoryId(@PathVariable Long categoryId) {

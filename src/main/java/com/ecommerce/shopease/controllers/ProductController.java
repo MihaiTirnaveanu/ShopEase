@@ -1,16 +1,14 @@
 package com.ecommerce.shopease.controllers;
 
 import com.ecommerce.shopease.dtos.ProductDto;
-import com.ecommerce.shopease.models.Product;
 import com.ecommerce.shopease.services.ProductService;
-import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +48,22 @@ public class ProductController {
     public List<ProductDto> getProductsByCategoryId(@PathVariable Long categoryId) {
         return productService.getProductsByCategory(categoryId);
     }
+
+    @GetMapping(path = "/search/specifications")
+    @PreAuthorize("hasAuthority('admin:read') OR hasAuthority('user:read')")
+    public List<ProductDto> searchProductsBySpecifications(@RequestParam String query,
+                                                           @RequestParam(defaultValue = "desc") String sortOrder) {
+        List<ProductDto> productDtos = productService.searchProductBySpecifications(query);
+
+        if ("asc".equalsIgnoreCase(sortOrder)) {
+            productDtos.sort(Comparator.comparingDouble(ProductDto::getScore));
+        } else {
+            productDtos.sort(Comparator.comparingDouble(ProductDto::getScore).reversed());
+        }
+
+        return productDtos;
+    }
+
 
     @PostMapping
     @PreAuthorize("hasAuthority('admin:create')")

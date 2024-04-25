@@ -24,6 +24,8 @@ public class ProductDto {
 
     private String image;
 
+    private double score = -1;
+
     public ProductDto(Product product) {
         id = product.getId();
         name = product.getName();
@@ -34,6 +36,11 @@ public class ProductDto {
         categoryId = product.getCategory().getId();
         cost = product.getCost();
         image = product.getImage();
+    }
+
+    public ProductDto(Product product, double score) {
+        this(product);
+        this.score = score;
     }
 
     public ProductDto() {

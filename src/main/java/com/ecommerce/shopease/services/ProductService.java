@@ -3,6 +3,7 @@ package com.ecommerce.shopease.services;
 import com.ecommerce.shopease.dtos.ProductDto;
 import com.ecommerce.shopease.models.Category;
 import com.ecommerce.shopease.models.Product;
+import com.ecommerce.shopease.models.ProductScore;
 import com.ecommerce.shopease.repos.CategoryRepository;
 import com.ecommerce.shopease.repos.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,20 +11,64 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
-
     private final ProductRepository productRepository;
-
     private final CategoryRepository categoryRepository;
+    private final LuceneService luceneService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(
+            ProductRepository productRepository,
+            CategoryRepository categoryRepository,
+            LuceneService luceneService
+    ) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.luceneService = luceneService;
     }
+
+    public List<ProductDto> searchProductBySpecifications(String query) {
+        // Get product scores from Lucene search
+        Set<ProductScore> productScores = luceneService.search("specifications", query);
+
+        // Get products from database based on Lucene search results
+        List<Product> productsFromLucene = productRepository.findAllById(
+                productScores.stream()
+                        .map(ProductScore::getProductId)
+                        .collect(Collectors.toList())
+        );
+
+        // Map Lucene search results to ProductDto objects
+        Map<Long, Double> luceneProductMap = productScores.stream()
+                .collect(Collectors.toMap(ProductScore::getProductId, ProductScore::getScore));
+
+        List<ProductDto> productDtos = new ArrayList<>();
+
+        // Add products from Lucene search results to productDtos
+        for (Product product : productsFromLucene) {
+            Long productId = product.getId();
+            Double score = luceneProductMap.getOrDefault(productId, -1.0); // Use -1 score for products from Lucene
+
+            productDtos.add(new ProductDto(product, score));
+        }
+
+        // Get products from database based on name search
+        List<ProductDto> productsFromNameSearch = searchProductByName(query);
+
+        // Filter out products already added from Lucene search
+        productsFromNameSearch.removeIf(productDto -> luceneProductMap.containsKey(productDto.getId()));
+
+        // Add remaining products from name search to productDtos with score of -1
+        productDtos.addAll(productsFromNameSearch);
+
+        return productDtos;
+    }
+
 
     public List<ProductDto> getAllProducts() {
         return productRepository.findAll().stream()
@@ -45,6 +90,8 @@ public class ProductService {
         product.setCost(productDto.getCost());
         product.setImage(productDto.getImage());
 
+        luceneService.indexProduct(product.getId(), product.getSpecifications());
+
         return new ProductDto(productRepository.save(product));
     }
 
@@ -63,6 +110,8 @@ public class ProductService {
         product.setCategory(category);
         product.setCost(productDto.getCost());
         product.setImage(productDto.getImage());
+
+        luceneService.indexProduct(product.getId(), product.getSpecifications());
 
         return new ProductDto(productRepository.save(product));
     }

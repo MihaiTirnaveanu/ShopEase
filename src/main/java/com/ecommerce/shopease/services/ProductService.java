@@ -33,37 +33,29 @@ public class ProductService {
     }
 
     public List<ProductDto> searchProductBySpecifications(String query) {
-        // Get product scores from Lucene search
         Set<ProductScore> productScores = luceneService.search("specifications", query);
 
-        // Get products from database based on Lucene search results
         List<Product> productsFromLucene = productRepository.findAllById(
                 productScores.stream()
                         .map(ProductScore::getProductId)
                         .collect(Collectors.toList())
         );
 
-        // Map Lucene search results to ProductDto objects
         Map<Long, Double> luceneProductMap = productScores.stream()
                 .collect(Collectors.toMap(ProductScore::getProductId, ProductScore::getScore));
 
         List<ProductDto> productDtos = new ArrayList<>();
-
-        // Add products from Lucene search results to productDtos
         for (Product product : productsFromLucene) {
             Long productId = product.getId();
-            Double score = luceneProductMap.getOrDefault(productId, -1.0); // Use -1 score for products from Lucene
+            Double score = luceneProductMap.getOrDefault(productId, -1.0);
 
             productDtos.add(new ProductDto(product, score));
         }
 
-        // Get products from database based on name search
         List<ProductDto> productsFromNameSearch = searchProductByName(query);
 
-        // Filter out products already added from Lucene search
         productsFromNameSearch.removeIf(productDto -> luceneProductMap.containsKey(productDto.getId()));
 
-        // Add remaining products from name search to productDtos with score of -1
         productDtos.addAll(productsFromNameSearch);
 
         return productDtos;
